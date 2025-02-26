@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Musify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            background:black;
+        }
+        h1, p, h3 {
+            user-select: none; /* Prevent text selection */
+        }
+        .text{
+        }
+        .inp, .instru-inp, .nature-inp, .asmr-inp {
+            width: 650px;
+            height: 40px;
+            background-color: #190a0500;
+            border: 3px solid #F5EBE0;
+            border-radius: 15px;
+            position: absolute;
+            margin-top: 35px;
+            left:50%;
+            transform: translate(-50%, -50%);
+            color:#F5EBE0;
+            padding-left:20px;
+            font-family:"Raleway",serif;
+            font-style:italic;
+            font-weight: 500;
+            display: none; /* Hidden initially */
+            z-index: 1000;
+        }
+        h1{
+            color:#F2E8CF;
+            font-size: 200px;
+            position: fixed;
+            top: 60px;
+            left: 80px;
+            text-align: center;
+            font-family:"Josefin Sans",serif;
+        }
+        .caption{
+            color:#F2E8CF;
+            font-size: 30px;
+            position: fixed;
+            top: 340px;
+            left: 280px;
+            text-align: center;
+            font-family:"Josefin Sans",serif;
+        }
+        ::placeholder {
+            color: #F5EBE0;
+            font-family: "Raleway", serif;
+            font-weight: 500;
+            font-style: italic;
+        }
+        .proceed {
+            width: 65px;
+            height: 38px;
+            background-color: antiquewhite;
+            color: rgb(0, 0, 0);
+            border-radius: 15px;
+            position: absolute;
+            border: 3px solid #F5EBE0;
+            margin-top: 10px;
+            margin-left: 898px;
+        }
+        .moodsearch {
+            width: 65px;
+            height: 38px;
+            background-color: antiquewhite;
+            color: rgb(0, 0, 0);
+            border-radius: 15px;
+            position: absolute;
+            border: 3px solid #F5EBE0;
+            margin-top: 10px;
+            margin-left: 898px;
+        }
+        .music-item {
+            font-size: 40px;
+            font-family: "Raleway", serif;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 410px;
+            height: 170px;
+            top: 410px;
+            left: 435px;
+            background-size: 200px 50px;
+            backdrop-filter: blur(10px);
+            position: fixed;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .music-item h3 {
+            margin-top:7px;
+            font-size: 24px;
+            color: #F2E8CF;
+        }
+        .music-item p {
+            margin-top:12px;
+            font-size: 18px;
+            color: #F5EBE0;
+        }
+        .outer-box{
+            position:fixed;
+            height:100%;
+            width:100%;
+            z-index:0;
+            inset:0;
+            margin:auto;
+            filter:blur(100px);
+        }
+        .inner-box{
+            border-radius:99999px;
+            position:absolute;
+            inset:0;
+            margin:auto;
+            width:100vw;
+            height:100vh;
+            min-width:1000px;
+            overflow:hidden;
+            background-color: rgb(255, 255, 255);
+            transform:scale(0.6);
+        }
+        .box{
+            position:absolute;
+            width:100vw;
+            height:100vh;
+            inset:0;
+            margin:auto;
+            background:conic-gradient(from 0deg,#F2AFEF,#C499F3,#7360DF,#33186B);
+            animation: spinBlob 8s linear infinite;
+        }
+        @keyframes spinBlob {
+            0% {
+                transform: rotate(0deg) scale(2);
+            }
+            100%{
+                transform: rotate(1turn) scale(2);
+            }
+        }
+        #recommendations {
+            margin-top: 10px;
+            margin-left: 10px;
+            position: absolute;
+            color: #F5EBE0;
+            font-family: "Raleway", serif;
+        }
+        .language-container {
+            margin-top: 40px;
+            margin-left: 293px;
+            display: none; /* Hidden initially */
+        }
+        .language-dropdown {
+            width: 675px;
+            height: 49px;
+            background-color: rgba(25, 10, 5, 0);
+            border: 3px solid #F5EBE0;
+            border-radius: 15px;
+            color: #F5EBE0;
+            padding-left: 20px;
+            font-family: "Raleway", serif;
+            font-style: italic;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23F5EBE0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+        }
+        .language-dropdown option {
+            background-color: rgba(25, 10, 5, 0.8);
+            color: #F5EBE0;
+        }
+
+        /* Right Side Navigation Bar */
+        .right-nav {
+            position: fixed;
+            top: 100px;
+            right: 0;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 70px;
+            box-shadow: 0px 1.5px 22px 8px antiquewhite;
+            background:transparent;
+            backdrop-filter: blur(2px);
+            border-radius: 10px;
+            z-index: 10;
+            overflow: hidden;
+            transition: width 0.3s;
+        }
+
+        .right-nav:hover {
+            width: 250px;
+            height:150px
+        }
+
+        .right-nav .moodsearch-btn{
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            margin-top: 7.5px;
+            padding-top: 15px;
+            margin-left:102px;
+            background-color: #F2E8CF;
+            width:50px;
+            height:40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            position:absolute;
+            transition: box-shadow 0.3s ease;
+        }
+        .right-nav .instru-btn{
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            margin-top: 7.5px;
+            padding-top: 15px;
+            margin-left:180px;
+            background-color: #F2E8CF;
+            width:50px;
+            height:40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            position:absolute;
+            transition: box-shadow 0.3s ease;
+        }
+        .right-nav .lang-btn {
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            margin-top: 7.5px;
+            padding-top: 15px;
+            margin-left:25px;
+            background-color: #F2E8CF;
+            width:50px;
+            height:40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            position:absolute;
+            transition: box-shadow 0.3s ease;
+        }
+        .right-nav .info-btn {
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 15px;
+            margin-left:180px;
+            background-color: #F2E8CF;
+            width:50px;
+            height:40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            position:absolute;
+            transition: box-shadow 0.3s ease;
+        }
+        .right-nav .nature-btn {
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 15px;
+            margin-left:100px;
+            background-color: #F2E8CF;
+            width:50px;
+            height:40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            position:absolute;
+            transition: box-shadow 0.3s ease;
+        }
+        .right-nav .asmr-btn {
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 15px;
+            margin-left:25px;
+            background-color: #F2E8CF;
+            width:50px;
+            height:40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            position:absolute;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .right-nav .moodsearch-btn:hover,
+        .right-nav .lang-btn:hover,
+        .right-nav .info-btn:hover,
+        .right-nav .instru-btn:hover,
+        .right-nav .nature-btn:hover,
+        .right-nav .asmr-btn:hover {
+            box-shadow: 0 0 15px 8px #F2E8CF;
+        }
+
+        .right-nav:hover .moodsearch-btn,
+        .right-nav:hover .lang-btn,
+        .right-nav:hover .info-btn,
+        .right-nav:hover .instru-btn,
+        .right-nav:hover .nature-btn,
+        .right-nav:hover .asmr-btn {
+            display: block;  /* Show on hover */
+        }
+
+        /* Clicking animation */
+        .right-nav .moodsearch-btn:active,
+        .right-nav .lang-btn:active,
+        .right-nav .info-btn:active,
+        .right-nav .instru-btn:active,
+        .right-nav .nature-btn:active,
+        .right-nav .asmr-btn:active {
+            transform: scale(0.9);
+            transition: transform 0.5s ease;
+        }
+
+        /* Popup Box */
+        .popup-box {
+            display: none; /* Hidden initially */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 200px;
+            background-color: #F2E8CF;
+            border: 3px solid #F5EBE0;
+            border-radius: 15px;
+            z-index: 1001;
+            padding: 20px;
+            text-align: center;
+            font-family: "Raleway", serif;
+            color: #000000;
+        }
+
+        .popup-box h2 {
+            margin-top: 0;
+        }
+
+        .popup-box p {
+            margin-top: 10px;
+        }
+
+        .popup-box .close-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #F5EBE0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Mouse follow animation */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #F5EBE0;
+            color:antiquewhite;
+            background-color: rgba(250, 235, 215, 0.306);
+            border-radius: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: transform 0.1s ease; /* Smoother transition */
+            z-index: 1001;
+            box-shadow: 0px 1px 60px 1px antiquewhite;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer-box">
+        <div class="inner-box">
+            <div class="box" id="moodBox">
+            </div>
+        </div>
+    </div>
+    <h1>M U S I F Y</h1>
+    <p class="caption">W E L C O M E F O R V I B I N G Y O U R M O O D</p>
+    <div class="container">
+        <div class="language-container" id="languageContainer">
+            <select class="language-dropdown" id="language">
+                <option value="" disabled selected>Select Language</option>
+                <option value="English">English</option>
+                <option value="Telugu">Telugu</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Malyalam">Malyalam</option>
+                <option value="Tamil">Tamil</option>
+                <option value="Kannada">Kannada</option>
+                
+            </select>
+        </div>
+        <div class="search-container">
+        <form id="searchForm">
+            <input type="text" class="inp" name="search" placeholder="Search Musify..." id="moodSearchBox" />
+            <!--<button type="submit" class="proceed"><i class="fa-solid fa-music"></i></button>-->
+        </form>
+        </div>
+        <div class="instru-container">
+            <form id="instruForm">
+                <input type="text" class="instru-inp" name="instru" placeholder="Search Instrumental Mood..." id="instruSearchBox" />
+            </form>
+        </div>
+        <div class="nature-container">
+            <form id="natureForm">
+                <input type="text" class="nature-inp" name="nature" placeholder="Search Nature Mood..." id="natureSearchBox" />
+            </form>
+        </div>
+        
+        <div class="asmr-container">
+            <form id="asmrForm">
+                <input type="text" class="asmr-inp" name="asmr" placeholder="Search ASMR Mood..." id="asmrSearchBox" />
+            </form>
+        </div>
+        <div id="recommendations"></div>
+    </div>
+
+    <audio id="audioPlayer" controls style="display:none;">
+        <source id="audioSource" src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Right side navigation -->
+    <div class="right-nav">
+        <i class="fa-solid fa-moon moodsearch-btn" onclick="toggleSearchBox()"></i>
+        <i class="fa-solid fa-language lang-btn" onclick="toggleLanguageBox()"></i>
+        <i class="fa-solid fa-info info-btn" onclick="toggleInfoBox()"></i>
+        <i class="fa-solid fa-guitar instru-btn" onclick="toggleInstruBox()"></i>
+        <i class="fa-solid fa-leaf nature-btn" onclick="toggleNatureBox()"></i>
+        <i class="fa-solid fa-mitten asmr-btn" onclick="toggleAsmrBox()"></i>
+    </div>
+
+    <!-- Popup Box -->
+    <div class="popup-box" id="infoBox">
+        <h2>Information</h2>
+        <p>This is a popup box with some information.</p>
+        <button class="close-btn" onclick="toggleInfoBox()">Close</button>
+    </div>
+
+    <div class="popup-box" id="disclaimerBox">
+        <h2>Disclaimer</h2>
+        <p>This is a disclaimer that appears when the website is opened and disappears after 5 seconds.</p>
+    </div>
+
+    <div class="cursor" id="cursor"></div>
+
+    <script>
+        // Toggle visibility of nature search box
+function toggleNatureBox() {
+    let natureBox = document.getElementById("natureSearchBox");
+    if (natureBox.style.display === 'none' || natureBox.style.display === '') {
+        natureBox.style.display = 'block';
+    } else {
+        natureBox.style.display = 'none';
+    }
+}
+
+// Toggle visibility of ASMR search box
+function toggleAsmrBox() {
+    let asmrBox = document.getElementById("asmrSearchBox");
+    if (asmrBox.style.display === 'none' || asmrBox.style.display === '') {
+        asmrBox.style.display = 'block';
+    } else {
+        asmrBox.style.display = 'none';
+    }
+}
+
+// Handle nature form submission
+document.getElementById('natureForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    let searchQuery = document.getElementsByName('nature')[0].value.trim().toLowerCase();
+    const moodColors = {
+        happy: 'conic-gradient(from 0deg, #FFF100,#006BFF,#08C2FF,#BCF2F6)',
+        sad: 'conic-gradient(from 0deg, #2A004E,#500073,#C62300,#F14A00)',
+        angry: 'conic-gradient(from 0deg, #1a0508,  #33090f,  #66121d,  #892e19,  #ab4a15,  #cd6611 ,#ef820d)',
+        calm: 'conic-gradient(from 0deg,#003092,#00879E,#FFAB5B,#FFF2DB)',
+        chill:  'conic-gradient(from 0deg,#e8f2ff,  #16a1eb,  #042943,  #0e1e30,  #001631,  #001024,  #000b19)',
+        refreshed: 'conic-gradient(from 0deg,#c45161,  #e094a0,  #f2b6c0,  #f2dde1,  #cbc7d8,  #8db7d2,  #5e62a9 ,#434279 )',
+        stressed: 'conic-gradient(from 0deg, #c1f4d1,  #bda3ea,  #ed76be,  #ffe787,  #cc71d4,  #e65ca6,  #a2e7f0)',
+        relaxed: 'conic-gradient(from 0deg,#37AFE1,#4CC9FE,#F5F4B3,#FFFECB)',
+        peaceful: 'conic-gradient(from 0deg, #346779,  #4c95b3,  #1c433e,  #29655c,  #194947,  #7cdd43 ,#333333)',
+        sleepy: 'conic-gradient(from 0deg, #F72C5B,#FF748B,#A7D477,#E4F1AC)',
+        default: 'conic-gradient(from 0deg,  #9da5af,  #245675,  #a02130,  #eae2de,#735a50)'
+    };
+
+    // Apply mood-based animation and colors
+    let box = document.getElementById('moodBox');
+    box.style.background = moodColors[searchQuery] || moodColors['default'];
+    box.style.animation = 'spinBlob 8s linear infinite';  // Ensures the animation is applied
+    // Call the nature recommendation endpoint
+    let response = await fetch('/recommend_nature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `search=${encodeURIComponent(searchQuery)}`
+    });
+
+    let recommendations = await response.json();
+    let recommendationsDiv = document.getElementById('recommendations');
+    recommendationsDiv.innerHTML = recommendations.map(sound => 
+        `<div class="music-item">
+            <h3>${sound.title}</h3>
+            <p>Mood: ${sound.mood}</p>
+        </div>`
+    ).join('');
+
+    // Play the first recommended sound
+    let audioPlayer = document.getElementById('audioPlayer');
+    let audioSource = document.getElementById('audioSource');
+    
+    if (recommendations.length > 0) {
+        audioSource.src = recommendations[0].file;  // Set the audio source
+        audioPlayer.load();  // Reload the audio element to apply the new source
+        audioPlayer.play();  // Play the audio
+    }
+
+    // Hide nature search input box after submission
+    document.getElementById("natureSearchBox").style.display = "none";
+});
+
+// Handle ASMR form submission
+document.getElementById('asmrForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    let searchQuery = document.getElementsByName('asmr')[0].value.trim().toLowerCase();
+    const moodColors = {
+        happy: 'conic-gradient(from 0deg, #FFF100,#006BFF,#08C2FF,#BCF2F6)',
+        sad: 'conic-gradient(from 0deg, #2A004E,#500073,#C62300,#F14A00)',
+        angry: 'conic-gradient(from 0deg, #1a0508,  #33090f,  #66121d,  #892e19,  #ab4a15,  #cd6611 ,#ef820d)',
+        calm: 'conic-gradient(from 0deg,#003092,#00879E,#FFAB5B,#FFF2DB)',
+        chill:  'conic-gradient(from 0deg,#e8f2ff,  #16a1eb,  #042943,  #0e1e30,  #001631,  #001024,  #000b19)',
+        refreshed: 'conic-gradient(from 0deg,#c45161,  #e094a0,  #f2b6c0,  #f2dde1,  #cbc7d8,  #8db7d2,  #5e62a9 ,#434279 )',
+        stressed: 'conic-gradient(from 0deg, #c1f4d1,  #bda3ea,  #ed76be,  #ffe787,  #cc71d4,  #e65ca6,  #a2e7f0)',
+        relaxed: 'conic-gradient(from 0deg,#37AFE1,#4CC9FE,#F5F4B3,#FFFECB)',
+        peaceful: 'conic-gradient(from 0deg, #346779,  #4c95b3,  #1c433e,  #29655c,  #194947,  #7cdd43 ,#333333)',
+        sleepy: 'conic-gradient(from 0deg, #F72C5B,#FF748B,#A7D477,#E4F1AC)',
+        default: 'conic-gradient(from 0deg,  #9da5af,  #245675,  #a02130,  #eae2de,#735a50)'
+    };
+
+    // Apply mood-based animation and colors
+    let box = document.getElementById('moodBox');
+    box.style.background = moodColors[searchQuery] || moodColors['default'];
+    box.style.animation = 'spinBlob 8s linear infinite';  // Ensures the animation is applied
+    // Call the ASMR recommendation endpoint
+    let response = await fetch('/recommend_asmr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `search=${encodeURIComponent(searchQuery)}`
+    });
+
+    let recommendations = await response.json();
+    let recommendationsDiv = document.getElementById('recommendations');
+    recommendationsDiv.innerHTML = recommendations.map(sound => 
+        `<div class="music-item">
+            <h3>${sound.title}</h3>
+            <p>Mood: ${sound.mood}</p>
+        </div>`
+    ).join('');
+
+    // Play the first recommended sound
+    let audioPlayer = document.getElementById('audioPlayer');
+    let audioSource = document.getElementById('audioSource');
+    
+    if (recommendations.length > 0) {
+        audioSource.src = recommendations[0].file;  // Set the audio source
+        audioPlayer.load();  // Reload the audio element to apply the new source
+        audioPlayer.play();  // Play the audio
+    }
+
+    // Hide ASMR search input box after submission
+    document.getElementById("asmrSearchBox").style.display = "none";
+});
+        document.getElementById('instruForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    let searchQuery = document.getElementsByName('instru')[0].value.trim().toLowerCase();
+
+    // Define mood-based colors and animations
+    const moodColors = {
+        happy: 'conic-gradient(from 0deg, #FFF100,#006BFF,#08C2FF,#BCF2F6)',
+        sad: 'conic-gradient(from 0deg, #2A004E,#500073,#C62300,#F14A00)',
+        angry: 'conic-gradient(from 0deg, #1a0508,  #33090f,  #66121d,  #892e19,  #ab4a15,  #cd6611 ,#ef820d)',
+        calm: 'conic-gradient(from 0deg,#003092,#00879E,#FFAB5B,#FFF2DB)',
+        chill:  'conic-gradient(from 0deg,#e8f2ff,  #16a1eb,  #042943,  #0e1e30,  #001631,  #001024,  #000b19)',
+        refreshed: 'conic-gradient(from 0deg,#c45161,  #e094a0,  #f2b6c0,  #f2dde1,  #cbc7d8,  #8db7d2,  #5e62a9 ,#434279 )',
+        stressed: 'conic-gradient(from 0deg, #c1f4d1,  #bda3ea,  #ed76be,  #ffe787,  #cc71d4,  #e65ca6,  #a2e7f0)',
+        relaxed: 'conic-gradient(from 0deg,#37AFE1,#4CC9FE,#F5F4B3,#FFFECB)',
+        peaceful: 'conic-gradient(from 0deg, #346779,  #4c95b3,  #1c433e,  #29655c,  #194947,  #7cdd43 ,#333333)',
+        sleepy: 'conic-gradient(from 0deg, #F72C5B,#FF748B,#A7D477,#E4F1AC)',
+        default: 'conic-gradient(from 0deg,  #9da5af,  #245675,  #a02130,  #eae2de,#735a50)'
+    };
+
+    // Apply mood-based animation and colors
+    let box = document.getElementById('moodBox');
+    box.style.background = moodColors[searchQuery] || moodColors['default'];
+    box.style.animation = 'spinBlob 8s linear infinite';  // Ensures the animation is applied
+
+    // Call the instrumental recommendation endpoint
+    let response = await fetch('/recommend_instrumental', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `search=${encodeURIComponent(searchQuery)}`
+    });
+
+    let recommendations = await response.json();
+    let recommendationsDiv = document.getElementById('recommendations');
+    recommendationsDiv.innerHTML = recommendations.map(music => 
+        `<div class="music-item">
+            <h3>${music.title}</h3>
+            <p>Artist: ${music.artist}</p>
+            <p>Genre: ${music.genre}</p>
+        </div>` // This part ensures each song has its unique details displayed.
+    ).join('');
+
+    // Play the first recommended song
+    let audioPlayer = document.getElementById('audioPlayer');
+    let audioSource = document.getElementById('audioSource');
+    
+    if (recommendations.length > 0) {
+        audioSource.src = recommendations[0].file;  // Set the audio source
+        audioPlayer.load();  // Reload the audio element to apply the new source
+        audioPlayer.play();  // Play the audio
+    }
+
+    // Hide instrumental search input box after submission
+    document.getElementById("instruSearchBox").style.display = "none";
+
+    // Stop the audio if "stop" is entered in the search box
+    if (searchQuery === "stop") {
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;  // Reset the audio to the beginning
+    }
+});
+      document.getElementById('searchForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    let language = document.getElementById('language').value;
+    let searchQuery = document.getElementsByName('search')[0].value.trim().toLowerCase();
+
+    // Define mood-based colors and animations
+    const moodColors = {
+        happy: 'conic-gradient(from 0deg, #FFF100,#006BFF,#08C2FF,#BCF2F6)',
+        sad: 'conic-gradient(from 0deg, #2A004E,#500073,#C62300,#F14A00)',
+        angry: 'conic-gradient(from 0deg, #1a0508,  #33090f,  #66121d,  #892e19,  #ab4a15,  #cd6611 ,#ef820d)',
+        calm: 'conic-gradient(from 0deg,#003092,#00879E,#FFAB5B,#FFF2DB)',
+        chill:  'conic-gradient(from 0deg,#e8f2ff,  #16a1eb,  #042943,  #0e1e30,  #001631,  #001024,  #000b19)',
+        refreshed: 'conic-gradient(from 0deg,#c45161,  #e094a0,  #f2b6c0,  #f2dde1,  #cbc7d8,  #8db7d2,  #5e62a9 ,#434279 )',
+        stressed: 'conic-gradient(from 0deg, #c1f4d1,  #bda3ea,  #ed76be,  #ffe787,  #cc71d4,  #e65ca6,  #a2e7f0)',
+        relaxed: 'conic-gradient(from 0deg,#37AFE1,#4CC9FE,#F5F4B3,#FFFECB)',
+        peaceful: 'conic-gradient(from 0deg, #346779,  #4c95b3,  #1c433e,  #29655c,  #194947,  #7cdd43 ,#333333)',
+        sleepy: 'conic-gradient(from 0deg, #F72C5B,#FF748B,#A7D477,#E4F1AC)',
+        default: 'conic-gradient(from 0deg,  #9da5af,  #245675,  #a02130,  #eae2de,#735a50)'
+    };
+
+    // Apply mood-based animation and colors
+    let box = document.getElementById('moodBox');
+    box.style.background = moodColors[searchQuery] || moodColors['default'];
+    box.style.animation = 'spinBlob 8s linear infinite';  // Ensures the animation is applied
+
+    if (!language) {
+        alert("Please select a language first.");
+        return;
+    }
+
+    let response = await fetch('/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `language=${encodeURIComponent(language)}&search=${encodeURIComponent(searchQuery)}`
+    });
+
+    let recommendations = await response.json();
+    let recommendationsDiv = document.getElementById('recommendations');
+    recommendationsDiv.innerHTML = recommendations.map(music => 
+        `<div class="music-item">
+            <h3>${music.title}</h3>
+            <p>Artist: ${music.artist}</p>
+            <p>Genre: ${music.genre}</p>
+            <p>Language: ${music.language}</p>
+        </div>` // This part ensures each song has its unique details displayed.
+    ).join('');
+
+    // Play the first recommended song
+    let audioPlayer = document.getElementById('audioPlayer');
+    let audioSource = document.getElementById('audioSource');
+    
+    if (recommendations.length > 0) {
+        audioSource.src = recommendations[0].file;  // Set the audio source
+        audioPlayer.load();  // Reload the audio element to apply the new source
+        audioPlayer.play();  // Play the audio
+    }
+
+    // Hide mood search input box and language container after submission
+    document.getElementById("moodSearchBox").style.display = "none";
+    document.getElementById("languageContainer").style.display = "none";
+
+    // Stop the audio if "stop" is entered in the search box
+    if (searchQuery === "stop") {
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;  // Reset the audio to the beginning
+    }
+});
+
+document.getElementById('instruForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    let searchQuery = document.getElementsByName('instru')[0].value.trim().toLowerCase();
+
+    // Define mood-based colors and animations
+    const moodColors = {
+        happy: 'conic-gradient(from 0deg, #FFF100,#006BFF,#08C2FF,#BCF2F6)',
+        sad: 'conic-gradient(from 0deg, #2A004E,#500073,#C62300,#F14A00)',
+        angry: 'conic-gradient(from 0deg, #1a0508,  #33090f,  #66121d,  #892e19,  #ab4a15,  #cd6611 ,#ef820d)',
+        calm: 'conic-gradient(from 0deg,#003092,#00879E,#FFAB5B,#FFF2DB)',
+        chill:  'conic-gradient(from 0deg,#e8f2ff,  #16a1eb,  #042943,  #0e1e30,  #001631,  #001024,  #000b19)',
+        refreshed: 'conic-gradient(from 0deg,#c45161,  #e094a0,  #f2b6c0,  #f2dde1,  #cbc7d8,  #8db7d2,  #5e62a9 ,#434279 )',
+        stressed: 'conic-gradient(from 0deg, #c1f4d1,  #bda3ea,  #ed76be,  #ffe787,  #cc71d4,  #e65ca6,  #a2e7f0)',
+        relaxed: 'conic-gradient(from 0deg,#37AFE1,#4CC9FE,#F5F4B3,#FFFECB)',
+        peaceful: 'conic-gradient(from 0deg, #346779,  #4c95b3,  #1c433e,  #29655c,  #194947,  #7cdd43 ,#333333)',
+        sleepy: 'conic-gradient(from 0deg, #F72C5B,#FF748B,#A7D477,#E4F1AC)',
+        default: 'conic-gradient(from 0deg,  #9da5af,  #245675,  #a02130,  #eae2de,#735a50)'
+    };
+
+    // Apply mood-based animation and colors
+    let box = document.getElementById('moodBox');
+    box.style.background = moodColors[searchQuery] || moodColors['default'];
+    box.style.animation = 'spinBlob 8s linear infinite';  // Ensures the animation is applied
+
+    let response = await fetch('/recommend_instrumental', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `search=${encodeURIComponent(searchQuery)}`
+    });
+
+    let recommendations = await response.json();
+    let recommendationsDiv = document.getElementById('recommendations');
+    recommendationsDiv.innerHTML = recommendations.map(music => 
+        `<div class="music-item">
+            <h3>${music.title}</h3>
+            <p>Artist: ${music.artist}</p>
+            <p>Genre: ${music.genre}</p>
+        </div>` // This part ensures each song has its unique details displayed.
+    ).join('');
+
+    // Play the first recommended song
+    let audioPlayer = document.getElementById('audioPlayer');
+    let audioSource = document.getElementById('audioSource');
+    
+    if (recommendations.length > 0) {
+        audioSource.src = recommendations[0].file;  // Set the audio source
+        audioPlayer.load();  // Reload the audio element to apply the new source
+        audioPlayer.play();  // Play the audio
+    }
+
+    // Hide instrumental search input box after submission
+    document.getElementById("instruSearchBox").style.display = "none";
+
+    // Stop the audio if "stop" is entered in the search box
+    if (searchQuery === "stop") {
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;  // Reset the audio to the beginning
+    }
+});
+
+// Toggle visibility of mood search box
+function toggleSearchBox() {
+    let searchBox = document.getElementById("moodSearchBox");
+    if (searchBox.style.display === 'none' || searchBox.style.display === '') {
+        searchBox.style.display = 'block';
+    } else {
+        searchBox.style.display = 'none';
+    }
+}
+
+// Toggle visibility of instrumental search box
+function toggleInstruBox() {
+    let instruBox = document.getElementById("instruSearchBox");
+    if (instruBox.style.display === 'none' || instruBox.style.display === '') {
+        instruBox.style.display = 'block';
+    } else {
+        instruBox.style.display = 'none';
+    }
+}
+
+// Toggle visibility of language box
+function toggleLanguageBox() {
+    let languageContainer = document.getElementById("languageContainer");
+    languageContainer.style.display = (languageContainer.style.display === 'none' || languageContainer.style.display === '') ? 'block' : 'none';
+}
+
+// Toggle visibility of info box
+function toggleInfoBox() {
+    let infoBox = document.getElementById("infoBox");
+    infoBox.style.display = (infoBox.style.display === 'none' || infoBox.style.display === '') ? 'block' : 'none';
+}
+
+// Mouse follow animation
+document.addEventListener('mousemove', function(e) {
+    let cursor = document.getElementById('cursor');
+    cursor.style.left = e.pageX + 'px';
+    cursor.style.top = e.pageY + 'px';
+    cursor.style.transition = 'transform 0.1s ease'; // Add this line for smooth movement
+});
+            window.onload = function() {
+            let disclaimerBox = document.getElementById("disclaimerBox");
+            disclaimerBox.style.display = "block";
+            setTimeout(function() {
+                disclaimerBox.style.display = "none";
+            }, 5000); // Hide after 5 seconds
+        };
+
+    </script>
+    </body>
+</html>
